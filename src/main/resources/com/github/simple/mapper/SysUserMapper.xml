@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.simple.mapper.SysUserMapper">
+    <resultMap id="BaseResultMap" type="com.github.model.SysUser">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="user_password" property="userPassword" jdbcType="VARCHAR"/>
+        <result column="user_email" property="userEmail" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.github.model.SysUserWithBLOBs" extends="BaseResultMap">
+        <result column="user_info" property="userInfo" jdbcType="LONGVARCHAR"/>
+        <result column="head_img" property="headImg" jdbcType="LONGVARBINARY"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_name, user_password, user_email, create_time
+  </sql>
+    <sql id="Blob_Column_List">
+    user_info, head_img
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from sys_user
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectAll" resultType="com.github.model.SysUser">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM sys_user
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from sys_user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.github.model.SysUserWithBLOBs">
+        insert into sys_user (id, user_name, user_password,
+          user_email, create_time, user_info,
+          head_img)
+        values (#{id,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{userPassword,jdbcType=VARCHAR},
+          #{userEmail,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{userInfo,jdbcType=LONGVARCHAR},
+          #{headImg,jdbcType=LONGVARBINARY})
+    </insert>
+    <insert id="insert2" parameterType="com.github.model.SysUserWithBLOBs" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_user (id, user_name, user_password,
+        user_email, create_time, user_info,
+        head_img)
+        values (#{id,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{userPassword,jdbcType=VARCHAR},
+        #{userEmail,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{userInfo,jdbcType=LONGVARCHAR},
+        #{headImg,jdbcType=LONGVARBINARY})
+    </insert>
+    <insert id="insert3" parameterType="com.github.model.SysUserWithBLOBs">
+        insert into sys_user (id, user_name, user_password,
+        user_email, create_time, user_info,
+        head_img)
+        values (#{id,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{userPassword,jdbcType=VARCHAR},
+        #{userEmail,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{userInfo,jdbcType=LONGVARCHAR},
+        #{headImg,jdbcType=LONGVARBINARY})
+        <selectKey keyColumn="id" resultType="int" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    <insert id="insertSelective" parameterType="com.github.model.SysUserWithBLOBs">
+        insert into sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="userPassword != null">
+                user_password,
+            </if>
+            <if test="userEmail != null">
+                user_email,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="userInfo != null">
+                user_info,
+            </if>
+            <if test="headImg != null">
+                head_img,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="userPassword != null">
+                #{userPassword,jdbcType=VARCHAR},
+            </if>
+            <if test="userEmail != null">
+                #{userEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userInfo != null">
+                #{userInfo,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="headImg != null">
+                #{headImg,jdbcType=LONGVARBINARY},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.github.model.SysUserWithBLOBs">
+        update sys_user
+        <set>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="userPassword != null">
+                user_password = #{userPassword,jdbcType=VARCHAR},
+            </if>
+            <if test="userEmail != null">
+                user_email = #{userEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userInfo != null">
+                user_info = #{userInfo,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="headImg != null">
+                head_img = #{headImg,jdbcType=LONGVARBINARY},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.github.model.SysUserWithBLOBs">
+    update sys_user
+    set user_name = #{userName,jdbcType=VARCHAR},
+      user_password = #{userPassword,jdbcType=VARCHAR},
+      user_email = #{userEmail,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      user_info = #{userInfo,jdbcType=LONGVARCHAR},
+      head_img = #{headImg,jdbcType=LONGVARBINARY}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <update id="updateByPrimaryKey" parameterType="com.github.model.SysUser">
+    update sys_user
+    set user_name = #{userName,jdbcType=VARCHAR},
+      user_password = #{userPassword,jdbcType=VARCHAR},
+      user_email = #{userEmail,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+    <update id="updateByMap">
+        UPDATE sys_user
+        SET
+        <foreach collection="_parameter" item="val" index="key" separator=",">
+            ${key} = #{val}
+        </foreach>
+        where id = #{id}
+    </update>
+
+    <select id="selectRolesByUserId" resultType="com.github.model.SysRole">
+        SELECT c.id,c.role_name,c.create_by,c.create_time,a.user_name as "user.userName",a.user_email as "user.userEmail"
+        FROM sys_user a INNER JOIN sys_user_role b on a.id = b.user_id INNER JOIN sys_role c on b.role_id = c.id WHERE a.id = #{userId}
+    </select>
+
+    <select id="selectByUser" resultType="com.github.model.SysUser">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from sys_user
+        <where>
+            <if test="@com.github.utils.StringUtils@isNotEmpty(userName)">
+                <bind name="userNameLike" value="'%' + userName + '%'"/>
+                and user_name like #{userNameLike}
+            </if>
+            <if test="userEmail != null and userEmail != ''">
+                and user_email = #{userEmail}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByIdList" resultType="com.github.model.SysUserWithBLOBs">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from sys_user
+        where id in
+        <foreach collection="list" open="(" close=")" separator="," item="id" index="i">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="insertList">
+        insert into sys_user(user_name, user_password, user_email, user_info, head_img, create_time)  VALUES
+        <foreach collection="list" item="user" separator=",">
+            (
+            #{user.userName},#{user.userPassword},#{user.userEmail},#{user.userInfo},#{user.headImg,jdbcType=BLOB},#{user.createTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <resultMap id="userRoleMapSelect" extends="BaseResultMap" type="com.github.model.SysUser">
+        <association property="sysRole" column="{id=role_id}" fetchType="lazy"
+                     select="com.github.simple.mapper.SysRoleMapper.selectByPrimaryKey"/>
+    </resultMap>
+    <select id="selectUserAndRoleById" resultMap="userRoleMapSelect">
+        select
+        a.id,a.user_name,a.user_password,a.user_email,a.create_time,b.role_id
+        FROM sys_user a INNER JOIN sys_user_role b on a.id = b.user_id WHERE a.id = #{id}
+    </select>
+</mapper>
