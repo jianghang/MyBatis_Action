@@ -7,8 +7,9 @@
     <!--指定使用LOG4J输出日志 -->
     <settings>
         <setting name="logImpl" value="LOG4J"/>
-        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!--<setting name="mapUnderscoreToCamelCase" value="true"/>-->
     </settings>
+
 
     <typeAliases>
         <package name="com.github.model"/>
@@ -17,6 +18,10 @@
     <typeHandlers>
         <typeHandler handler="com.github.type.EnableTypeHandler" javaType="com.github.type.Enabled"/>
     </typeHandlers>
+
+    <plugins>
+        <plugin interceptor="com.github.interceptors.CameHumpInterceptor"/>
+    </plugins>
 
     <environments default="development">
         <environment id="development">

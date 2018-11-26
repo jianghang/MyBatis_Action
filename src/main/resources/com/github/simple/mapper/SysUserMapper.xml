@@ -33,6 +33,13 @@
         <include refid="Blob_Column_List"/>
         FROM sys_user
     </select>
+
+    <select id="selectUserById" resultType="java.util.Map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from sys_user
+        where id = #{id,jdbcType=INTEGER}
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from sys_user
     where id = #{id,jdbcType=INTEGER}
@@ -200,7 +207,7 @@
     </select>
 
     <insert id="insertList">
-        insert into sys_user(user_name, user_password, user_email, user_info, head_img, create_time)  VALUES
+        insert into sys_user(user_name, user_password, user_email, user_info, head_img, create_time) VALUES
         <foreach collection="list" item="user" separator=",">
             (
             #{user.userName},#{user.userPassword},#{user.userEmail},#{user.userInfo},#{user.headImg,jdbcType=BLOB},#{user.createTime,jdbcType=TIMESTAMP}

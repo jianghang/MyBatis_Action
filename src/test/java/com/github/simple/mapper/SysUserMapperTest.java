@@ -33,6 +33,20 @@ public class SysUserMapperTest extends BaseMapperTest{
     }
 
     @Test
+    public void testSelectUserById(){
+        SqlSession sqlSession = getSqlSession();
+        try {
+            SysUserMapper sysUserMapper = sqlSession.getMapper(SysUserMapper.class);
+            List<Map<String,Object>> mapList = sysUserMapper.selectUserById(1);
+            logger.info("mapList:{}",mapList);
+
+            Assert.assertNotNull(mapList);
+        }finally {
+            sqlSession.close();
+        }
+    }
+
+    @Test
     public void testSelectAll(){
         SqlSession sqlSession = getSqlSession();
         try {

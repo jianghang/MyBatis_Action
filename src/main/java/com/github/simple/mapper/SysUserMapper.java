@@ -34,6 +34,8 @@ public interface SysUserMapper {
 
     List<SysUser> selectAll();
 
+    List<Map<String,Object>> selectUserById(Integer id);
+
     List<SysRole> selectRolesByUserId(Integer id);
 
     List<SysUser> selectByUser(SysUser sysUser);
