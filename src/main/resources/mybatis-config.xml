@@ -20,7 +20,9 @@
     </typeHandlers>
 
     <plugins>
-        <plugin interceptor="com.github.interceptors.CameHumpInterceptor"/>
+        <plugin interceptor="com.github.interceptors.PageInterceptor">
+            <property name="dialect" value="com.github.interceptors.MySqlDialect" />
+        </plugin>
     </plugins>
 
     <environments default="development">

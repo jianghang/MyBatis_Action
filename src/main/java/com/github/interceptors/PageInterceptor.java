@@ -1,15 +1,13 @@
 package com.github.interceptors;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
-import org.apache.ibatis.plugin.Interceptor;
-import org.apache.ibatis.plugin.Intercepts;
-import org.apache.ibatis.plugin.Invocation;
-import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
@@ -40,6 +38,8 @@ public class PageInterceptor implements Interceptor {
         MappedStatement ms = (MappedStatement) args[0];
         Object parameterObject = args[1];
         RowBounds rowBounds = (RowBounds) args[2];
+        BoundSql sql = ms.getBoundSql(parameterObject);
+        System.out.println(JSON.toJSONString(sql));
         if (!dialect.skip(ms.getId(), parameterObject, rowBounds)) {
             ResultHandler resultHandler = (ResultHandler) args[3];
             Executor executor = (Executor) invocation.getTarget();
@@ -63,6 +63,18 @@ public class PageInterceptor implements Interceptor {
                 }
             }
 
+            if (dialect.beforePage(ms.getId(), parameterObject, rowBounds)) {
+                CacheKey pageKey = executor.createCacheKey(ms, parameterObject, rowBounds, boundSql);
+                String pageSql = dialect.getPageSql(boundSql, parameterObject, rowBounds, pageKey);
+                BoundSql pageBoundSql = new BoundSql(ms.getConfiguration(), pageSql, boundSql.getParameterMappings(), parameterObject);
+
+                for (String key : additionalParameters.keySet()) {
+                    pageBoundSql.setAdditionalParameter(key, additionalParameters.get(key));
+                }
+
+                List resultList = executor.query(ms, parameterObject, RowBounds.DEFAULT, resultHandler, pageKey, pageBoundSql);
+                return dialect.afterPage(resultList, parameterObject, rowBounds);
+            }
         }
 
         return invocation.proceed();
@@ -104,11 +116,24 @@ public class PageInterceptor implements Interceptor {
 
     @Override
     public Object plugin(Object target) {
-        return null;
+        return Plugin.wrap(target, this);
     }
 
     @Override
     public void setProperties(Properties properties) {
+        String dialectClass = properties.getProperty("dialect");
+        try {
+            dialect = (Dialect) Class.forName(dialectClass).newInstance();
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            throw new RuntimeException("使用PageInterceptor分页插件时，必须设计dialect属性");
+        }
 
+        dialect.setProperties(properties);
+        try {
+            additionalParametersField = BoundSql.class.getDeclaredField("additionalParameters");
+            additionalParametersField.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

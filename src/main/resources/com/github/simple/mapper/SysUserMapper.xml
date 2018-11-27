@@ -224,4 +224,16 @@
         a.id,a.user_name,a.user_password,a.user_email,a.create_time,b.role_id
         FROM sys_user a INNER JOIN sys_user_role b on a.id = b.user_id WHERE a.id = #{id}
     </select>
+
+    <select id="selectUserAll" resultType="com.github.model.SysUser">
+        SELECT
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        FROM sys_user
+    </select>
+
+    <select id="selectSomeThing" resultType="java.util.Map">
+        ${sql}
+    </select>
 </mapper>

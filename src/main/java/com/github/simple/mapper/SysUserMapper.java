@@ -4,6 +4,8 @@ import com.github.model.SysRole;
 import com.github.model.SysUser;
 import com.github.model.SysUserWithBLOBs;
 import org.apache.ibatis.annotations.CacheNamespace;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
 import java.util.Map;
@@ -43,4 +45,8 @@ public interface SysUserMapper {
     List<SysUserWithBLOBs> selectByIdList(List<Integer> idList);
 
     List<SysUser> selectUserAndRoleById(Integer id);
+
+    List<SysUser> selectUserAll(RowBounds rowBounds);
+
+    List<Map<String,Object>> selectSomeThing(@Param("sql") String sql);
 }
