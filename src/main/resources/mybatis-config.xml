@@ -20,9 +20,14 @@
     </typeHandlers>
 
     <plugins>
+        <plugin interceptor="com.github.interceptors.DataMaskingInterceptor">
+            <property name="packages" value="com.github.simple.mapper.SysUserMapper"/>
+            <property name="dbType" value="oracle"/>
+        </plugin>
         <plugin interceptor="com.github.interceptors.PageInterceptor">
             <property name="dialect" value="com.github.interceptors.MySqlDialect" />
         </plugin>
+        <plugin interceptor="com.github.interceptors.CameHumpInterceptor"/>
     </plugins>
 
     <environments default="development">
