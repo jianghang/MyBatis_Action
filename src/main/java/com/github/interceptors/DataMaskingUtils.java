@@ -3,6 +3,7 @@ package com.github.interceptors;
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
@@ -30,8 +31,14 @@ public class DataMaskingUtils {
                     SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) sqlExpr;
                     if("user_name".equals(sqlPropertyExpr.getName())){
                         item.setAlias(sqlPropertyExpr.getName());
-                        sqlPropertyExpr
-                        sqlPropertyExpr.setName("substring(a.user_name,1,2)");
+                        SQLIdentifierExpr identifierExpr = new SQLIdentifierExpr("substring(a.user_name,1,2)");
+                        item.setExpr(identifierExpr);
+                    }
+                }else if(sqlExpr instanceof SQLIdentifierExpr){
+                    SQLIdentifierExpr identifierExpr = (SQLIdentifierExpr) sqlExpr;
+                    if("user_name".equals(identifierExpr.getName())){
+                        item.setAlias(identifierExpr.getName());
+                        identifierExpr.setName("substring(user_name,1,2)");
                     }
                 }
             });

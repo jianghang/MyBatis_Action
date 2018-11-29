@@ -6,21 +6,22 @@ import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 @Intercepts(
-        @Signature(
-                type = Executor.class,
-                method = "query",
-                args = {MappedStatement.class, Object.class,
-                        RowBounds.class, ResultHandler.class}))
+        {
+                @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
+                @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class}),
+        }
+)
 public class DataMaskingInterceptor implements Interceptor {
 
     private String[] packages;
@@ -36,17 +37,20 @@ public class DataMaskingInterceptor implements Interceptor {
         if (StringUtils.containsAny(id, packages)) {
             RowBounds rowBounds = (RowBounds) args[2];
             ResultHandler resultHandler = (ResultHandler) args[3];
-            BoundSql boundSql = ms.getBoundSql(parameterObject);
             Executor executor = (Executor) invocation.getTarget();
 
+            BoundSql boundSql = ms.getBoundSql(parameterObject);
             String sql = DataMaskingUtils.rewriteSQL(boundSql.getSql(), dbType);
             BoundSql rewriteBoundSql = new BoundSql(ms.getConfiguration(), sql, boundSql.getParameterMappings(), parameterObject);
-            CacheKey cacheKey = executor.createCacheKey(ms, parameterObject, rowBounds, boundSql);
-            Map<String, Object> additionalParameters = (Map<String, Object>) additionalParametersField.get(boundSql);
-            for (String key : additionalParameters.keySet()) {
-                rewriteBoundSql.setAdditionalParameter(key, additionalParameters.get(key));
-            }
-            return executor.query(ms,parameterObject,RowBounds.DEFAULT,resultHandler,cacheKey,rewriteBoundSql);
+
+            MappedStatement newMappedStatement = newMappedStatement(ms, new BoundSqlSqlSource(rewriteBoundSql));
+            args[0] = newMappedStatement;
+//            CacheKey cacheKey = executor.createCacheKey(ms, parameterObject, rowBounds, boundSql);
+//            Map<String, Object> additionalParameters = (Map<String, Object>) additionalParametersField.get(boundSql);
+//            for (String key : additionalParameters.keySet()) {
+//                rewriteBoundSql.setAdditionalParameter(key, additionalParameters.get(key));
+//            }
+//            return executor.query(ms, parameterObject, RowBounds.DEFAULT, resultHandler, cacheKey, rewriteBoundSql);
         }
 
         return invocation.proceed();
@@ -77,6 +81,46 @@ public class DataMaskingInterceptor implements Interceptor {
             additionalParametersField.setAccessible(true);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private MappedStatement newMappedStatement(MappedStatement ms, SqlSource newSqlSource) {
+        MappedStatement.Builder builder =
+                new MappedStatement.Builder(ms.getConfiguration(), ms.getId(), newSqlSource, ms.getSqlCommandType());
+        builder.resource(ms.getResource());
+        builder.fetchSize(ms.getFetchSize());
+        builder.statementType(ms.getStatementType());
+        builder.keyGenerator(ms.getKeyGenerator());
+        if (ms.getKeyProperties() != null && ms.getKeyProperties().length != 0) {
+            StringBuilder keyProperties = new StringBuilder();
+            for (String keyProperty : ms.getKeyProperties()) {
+                keyProperties.append(keyProperty).append(",");
+            }
+            keyProperties.delete(keyProperties.length() - 1, keyProperties.length());
+            builder.keyProperty(keyProperties.toString());
+        }
+        builder.timeout(ms.getTimeout());
+        builder.parameterMap(ms.getParameterMap());
+        builder.resultMaps(ms.getResultMaps());
+        builder.resultSetType(ms.getResultSetType());
+        builder.cache(ms.getCache());
+        builder.flushCacheRequired(ms.isFlushCacheRequired());
+        builder.useCache(ms.isUseCache());
+
+        return builder.build();
+    }
+
+    class BoundSqlSqlSource implements SqlSource {
+
+        private BoundSql boundSql;
+
+        public BoundSqlSqlSource(BoundSql boundSql) {
+            this.boundSql = boundSql;
+        }
+
+        @Override
+        public BoundSql getBoundSql(Object parameterObject) {
+            return boundSql;
         }
     }
 }

@@ -20,12 +20,13 @@ import java.util.Properties;
 /**
  * Created by jianghang on 2018/5/7.
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 @Intercepts(
-        @Signature(
-                type = Executor.class,
-                method = "query",
-                args = {MappedStatement.class, Object.class,
-                        RowBounds.class, ResultHandler.class}))
+        {
+                @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
+                @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class}),
+        }
+)
 public class PageInterceptor implements Interceptor {
 
     private static final List<ResultMapping> EMPTY_RESULTMAPPING = new ArrayList<>();
@@ -39,7 +40,6 @@ public class PageInterceptor implements Interceptor {
         Object parameterObject = args[1];
         RowBounds rowBounds = (RowBounds) args[2];
         BoundSql sql = ms.getBoundSql(parameterObject);
-        System.out.println(JSON.toJSONString(sql));
         if (!dialect.skip(ms.getId(), parameterObject, rowBounds)) {
             ResultHandler resultHandler = (ResultHandler) args[3];
             Executor executor = (Executor) invocation.getTarget();
