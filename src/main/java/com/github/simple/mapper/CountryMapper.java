@@ -50,4 +50,6 @@ public interface CountryMapper {
      * @mbg.generated
      */
     int updateByPrimaryKey(Country record);
+
+    Country selectByName(String name);
 }

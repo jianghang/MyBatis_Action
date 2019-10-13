@@ -10,14 +10,15 @@ import java.util.List;
 /**
  * Created by jianghang on 2018/4/26.
  */
-public class CountryMapperTest extends BaseMapperTest{
+public class CountryMapperTest extends BaseMapperTest {
 
     @Test
-    public void testSelectOne(){
+    public void testSelectOne() {
         SqlSession sqlSession = getSqlSession();
         List<Country> countries = sqlSession.selectList("com.github.simple.mapper.CountryMapper.selectAll");
         System.out.println(JSON.toJSONString(countries));
-        Country country = sqlSession.selectOne("com.github.simple.mapper.CountryMapper.selectByPrimaryKey",1);
+        Country country = sqlSession.selectOne("com.github.simple.mapper.CountryMapper.selectByPrimaryKey", 1);
+        country = sqlSession.selectOne("com.github.simple.mapper.CountryMapper.selectByName", "中国");
         System.out.println(JSON.toJSONString(country));
         sqlSession.close();
     }

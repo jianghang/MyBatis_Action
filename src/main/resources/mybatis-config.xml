@@ -21,7 +21,7 @@
 
     <plugins>
         <plugin interceptor="com.github.interceptors.PageInterceptor">
-            <property name="dialect" value="com.github.interceptors.MySqlDialect" />
+            <property name="dialect" value="com.github.interceptors.MySqlDialect"/>
         </plugin>
         <plugin interceptor="com.github.interceptors.DataMaskingInterceptor">
             <property name="packages" value="com.github.simple.mapper.SysUserMapper"/>
@@ -36,17 +36,18 @@
                 <property name="" value=""/>
             </transactionManager>
             <dataSource type="UNPOOLED">
-                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
                 <property name="url"
-                          value="jdbc:mysql://127.0.0.1:3306/myblog?useUnicode=true&amp;characterEncoding=utf8"/>
-                <property name="username" value="root"/>
-                <property name="password" value="admin"/>
+                          value="jdbc:mysql://192.168.31.75:3307/mybatis_test?useUnicode=true&amp;characterEncoding=utf8"/>
+                <property name="username" value="develop"/>
+                <property name="password" value="Admin123."/>
             </dataSource>
         </environment>
     </environments>
 
     <mappers>
         <mapper resource="com/github/simple/mapper/CountryMapper.xml"/>
+        <mapper resource="com/github/simple/mapper/CountryMapperExtend.xml"/>
         <mapper resource="com/github/simple/mapper/SysPrivilegeMapper.xml"/>
         <mapper resource="com/github/simple/mapper/SysRoleMapper.xml"/>
         <mapper resource="com/github/simple/mapper/SysRolePrivilegeMapper.xml"/>

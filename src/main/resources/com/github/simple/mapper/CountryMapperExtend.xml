@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.simple.mapper.CountryMapper">
+
+    <select id="selectByName" resultType="com.github.model.Country">
+        select * from country t where t.countryname = #{name}
+    </select>
+</mapper>
