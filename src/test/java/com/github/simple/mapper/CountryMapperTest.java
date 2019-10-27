@@ -20,6 +20,9 @@ public class CountryMapperTest extends BaseMapperTest {
         Country country = sqlSession.selectOne("com.github.simple.mapper.CountryMapper.selectByPrimaryKey", 1);
         country = sqlSession.selectOne("com.github.simple.mapper.CountryMapper.selectByName", "中国");
         System.out.println(JSON.toJSONString(country));
+        CountryMapper countryMapper = sqlSession.getMapper(CountryMapper.class);
+        country = countryMapper.selectByName("中国");
+        System.out.println(JSON.toJSON(country));
         sqlSession.close();
     }
 

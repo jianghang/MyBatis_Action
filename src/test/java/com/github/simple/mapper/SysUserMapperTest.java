@@ -86,16 +86,17 @@ public class SysUserMapperTest extends BaseMapperTest {
             sysUser.setUserPassword("123456");
             sysUser.setUserEmail("test@qq.com");
             sysUser.setUserInfo("test info");
-            sysUser.setHeadImg(new byte[]{1, 2, 3});
+//            sysUser.setHeadImg(new byte[]{1, 2, 3});
             sysUser.setCreateTime(new Date());
 
             int result = sysUserMapper.insert(sysUser);
             logger.info("result: {}", result);
 
             Assert.assertEquals(1, result);
-            Assert.assertNotNull(sysUser.getId());
+//            Assert.assertNotNull(sysUser.getId());
         } finally {
-            sqlSession.rollback();
+            sqlSession.commit();
+//            sqlSession.rollback();
             sqlSession.close();
         }
     }

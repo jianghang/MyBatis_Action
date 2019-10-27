@@ -28,6 +28,7 @@
             <property name="dbType" value="oracle"/>
         </plugin>
         <plugin interceptor="com.github.interceptors.CameHumpInterceptor"/>
+        <plugin interceptor="com.github.interceptors.DataSyncInterceptor"/>
     </plugins>
 
     <environments default="development">
